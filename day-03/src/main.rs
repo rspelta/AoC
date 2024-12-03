@@ -26,9 +26,7 @@ fn part2() -> i32 {
     let mut _do = true;
 
     for val in re.find_iter(&file_txt) {
-        let matched = val.as_str();
-
-        match matched {
+        match val.as_str() {
             s if s.starts_with("mul") => {
                 if _do {
                     let vals: Vec<&str> = val.as_str().trim_start_matches("mul(").trim_end_matches(")").split(",").collect();
