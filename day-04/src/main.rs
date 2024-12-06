@@ -1,9 +1,16 @@
 
-fn isXmasHorizontal(x: usize, y:  usize, input: Vec<&str>) -> bool {
+fn is_xmas_horizontal(x: usize, y:  usize, input: &Vec<&str>) -> bool {
     (input[y].chars().nth(x).unwrap() == 'X' && input[y].chars().nth(x+1).unwrap() == 'M' && input[y].chars().nth(x+2).unwrap() == 'A' && input[y].chars().nth(x+3).unwrap() == 'S') || 
             (input[y].chars().nth(x).unwrap() == 'S' && input[y].chars().nth(x+1).unwrap() == 'A' && input[y].chars().nth(x+2).unwrap() == 'M' && input[y].chars().nth(x+3).unwrap() == 'X')
 }
 
+fn is_xmax_vertical(x: usize, y: usize, input: &Vec<&str>) -> bool {
+    let normal: bool = input[y].chars().nth(x).unwrap() == 'X' && input[y+1].chars().nth(x).unwrap() == 'M' && input[y+2].chars().nth(x).unwrap() == 'A' && input[y+3].chars().nth(x).unwrap() == 'S';
+    let reverse: bool = input[y].chars().nth(x).unwrap() == 'S' && input[y+1].chars().nth(x).unwrap() == 'A' && input[y+2].chars().nth(x).unwrap() == 'M' && input[y+3].chars().nth(x).unwrap() == 'X';
+    
+    normal || reverse
+}
+/*
 // not working
 fn isXmasVertical(x i32, y i32, input Vec<Vec<i32>>) -> bool {
     return (input[y][x] == 'X' && input[y+1][x] == 'M' && input[y+2][x] == 'A' && input[y+1][x] == 'S') || (input[y][x] == 'S' && input[y+1][x] == 'A' && input[y+1][x+2] == 'M' && input[y+1][x] == 'X')
@@ -14,7 +21,7 @@ fn isXmasDiagonal(x i32, y i32, input Vec<Vec<i32>>) -> bool {
     return (input[y][x] == 'X' && input[y+1][x+1] == 'M' && input[y+1][x+1] == 'A' && input[y+1][x] == 'S') || (input[y][x] == 'S' && input[y+1][x] == 'A' && input[y+1][x+2] == 'M' && input[y+1][x] == 'X')
 }
 
-
+*/
 fn part1() -> i32 {
     let text = include_str!("./input.txt");
     let mut sum : i32 = 0;
@@ -26,7 +33,17 @@ fn part1() -> i32 {
 
     for y in 0..sizex {
         for x in 0..sizey {
-            isXmasHorizontal(x, y, text.lines().collect());
+            if sizex - x >= 4 {   
+                if is_xmas_horizontal(x, y, &lines) {
+                    sum += 1;
+                }
+            }
+
+            if sizey - y >= 4 {   
+                if is_xmax_vertical(x, y, &lines) {
+                    sum += 1;
+                }
+            }
         }
     }
     sum
