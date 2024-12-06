@@ -28,41 +28,29 @@ fn is_xmax_diagonal_2(x: usize, y: usize, input: &Vec<&str>) -> bool {
  
     diagonal_left || diagonal_left_reverse
 }
-/*
 
-fn is_mas(x: usize, y: usize, input: &Vec<&str>) -> bool {
-    let normal: bool = input[y].chars().nth(x).unwrap() == 'M' && input[y+1].chars().nth(x+1).unwrap() == 'A' && input[y+2].chars().nth(x+2).unwrap() == 'S' &&
-                        input[y].chars().nth(x+2).unwrap() == 'M' && input[y].chars().nth(x+2).unwrap() == 'S';
 
-    let reverse: bool = input[y].chars().nth(x).unwrap() == 'M' && input[y+1].chars().nth(x+1).unwrap() == 'A' && input[y+2].chars().nth(x+2).unwrap() == 'S' &&
-                        input[y].chars().nth(x+2).unwrap() == 'M' && input[y].chars().nth(x+2).unwrap() == 'S';
-
-    let reverse1: bool = input[y].chars().nth(x).unwrap() == 'M' && input[y+1].chars().nth(x+1).unwrap() == 'A' && input[y+2].chars().nth(x+2).unwrap() == 'S' &&
-                         input[y].chars().nth(x+2).unwrap() == 'S' && input[y].chars().nth(x+2).unwrap() == 'M';
-
-    let reverse2: bool = input[y].chars().nth(x).unwrap() == 'S' && input[y+1].chars().nth(x+1).unwrap() == 'A' && input[y+2].chars().nth(x+2).unwrap() == 'M' &&
-                         input[y].chars().nth(x+2).unwrap() == 'M' && input[y].chars().nth(x+2).unwrap() == 'S';
-    
-    normal || reverse || reverse1 || reverse2            if sizey - y >= 4 && sizex - x >= 4 {   
-                if is_xmax_diagonal_1(x, y, &lines) {
-                    sum += 1;
-                }
-            }
-}
-    */
-
-/*
-// not working
-fn isXmasVertical(x i32, y i32, input Vec<Vec<i32>>) -> bool {
-    return (input[y][x] == 'X' && input[y+1][x] == 'M' && input[y+2][x] == 'A' && input[y+1][x] == 'S') || (input[y][x] == 'S' && input[y+1][x] == 'A' && input[y+1][x+2] == 'M' && input[y+1][x] == 'X')
+fn is_mas1(x: usize, y: usize, input: &Vec<&str>) -> bool {
+    input[y].chars().nth(x).unwrap() == 'M' && input[y+1].chars().nth(x+1).unwrap() == 'A' && input[y+2].chars().nth(x+2).unwrap() == 'S' &&
+                        input[y].chars().nth(x+2).unwrap() == 'M' && input[y+2].chars().nth(x).unwrap() == 'S'
 }
 
-// not working
-fn isXmasDiagonal(x i32, y i32, input Vec<Vec<i32>>) -> bool {
-    return (input[y][x] == 'X' && input[y+1][x+1] == 'M' && input[y+1][x+1] == 'A' && input[y+1][x] == 'S') || (input[y][x] == 'S' && input[y+1][x] == 'A' && input[y+1][x+2] == 'M' && input[y+1][x] == 'X')
+fn is_mas2(x: usize, y: usize, input: &Vec<&str>) -> bool {
+    input[y].chars().nth(x).unwrap() == 'M' && input[y+1].chars().nth(x+1).unwrap() == 'A' && input[y+2].chars().nth(x+2).unwrap() == 'S' &&
+                        input[y].chars().nth(x+2).unwrap() == 'S' && input[y+2].chars().nth(x).unwrap() == 'M'
 }
 
-*/
+fn is_mas3(x: usize, y: usize, input: &Vec<&str>) -> bool {
+    input[y].chars().nth(x).unwrap() == 'M' && input[y+1].chars().nth(x+1).unwrap() == 'A' && input[y+2].chars().nth(x+2).unwrap() == 'S' &&
+                         input[y].chars().nth(x+2).unwrap() == 'S' && input[y+2].chars().nth(x).unwrap() == 'M'
+}
+
+fn is_mas4(x: usize, y: usize, input: &Vec<&str>) -> bool {
+    input[y].chars().nth(x).unwrap() == 'S' && input[y+1].chars().nth(x+1).unwrap() == 'A' && input[y+2].chars().nth(x+2).unwrap() == 'M' &&
+                         input[y].chars().nth(x+2).unwrap() == 'M' && input[y+2].chars().nth(x).unwrap() == 'S'
+}
+
+
 fn part1() -> i32 {
     let text = include_str!("./input.txt");
     let mut sum : i32 = 0;
@@ -102,10 +90,40 @@ fn part1() -> i32 {
     sum
 }
 
+fn part2() -> i32 {
+    let text = include_str!("./input.txt");
+    let mut sum : i32 = 0;
+
+    let lines: Vec<&str> = text.lines().collect();
+
+    let sizex: usize = lines[0].len() as usize;
+    let sizey: usize = lines.len() as usize;
+
+    for y in 0..sizex {
+        for x in 0..sizey {
+
+            if sizey - y >= 3 && sizex - x >= 3 {   
+                if is_mas1(x, y, &lines) {
+                    sum += 1;
+                }
+                if is_mas2(x, y, &lines) {
+                    sum += 1;
+                }
+                if is_mas3(x, y, &lines) {
+                    sum += 1;
+                }
+                if is_mas4(x, y, &lines) {
+                    sum += 1;
+                }
+            }
+        }
+    }
+    sum
+}
 
 fn main() {
     println!("{}", part1());
-    //println!("{}", part2());
+    println!("{}", part2());
 }
 
 // working
