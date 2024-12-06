@@ -12,11 +12,11 @@ fn is_xmax_vertical(x: usize, y: usize, input: &Vec<&str>) -> bool {
 }
 
 fn is_xmax_diagonal(x: usize, y: usize, input: &Vec<&str>) -> bool {
-    let diagonal_right: bool = input[y].chars().nth(x).unwrap() == 'X' && input[y+1].chars().nth(x+1).unwrap() == 'M' && input[y+2].chars().nth(x+2).unwrap() == 'A' && input[y+3].chars().nth(x+3).unwrap() == 'S';
+    let diagonal_right:         bool = input[y].chars().nth(x).unwrap() == 'X' && input[y+1].chars().nth(x+1).unwrap() == 'M' && input[y+2].chars().nth(x+2).unwrap() == 'A' && input[y+3].chars().nth(x+3).unwrap() == 'S';
     let diagonal_right_reverse: bool = input[y].chars().nth(x).unwrap() == 'S' && input[y+1].chars().nth(x+1).unwrap() == 'A' && input[y+2].chars().nth(x+2).unwrap() == 'M' && input[y+3].chars().nth(x+3).unwrap() == 'X';
  
-    let diagonal_left: bool = input[y].chars().nth(x).unwrap() == 'X' && input[y-1].chars().nth(x-1).unwrap() == 'M' && input[y-2].chars().nth(x-2).unwrap() == 'A' && input[y-3].chars().nth(x-3).unwrap() == 'S';
-    let diagonal_left_reverse: bool = input[y].chars().nth(x).unwrap() == 'S' && input[y-1].chars().nth(x-1).unwrap() == 'A' && input[y-2].chars().nth(x-2).unwrap() == 'M' && input[y-3].chars().nth(x-3).unwrap() == 'X';
+    let diagonal_left:         bool = input[y].chars().nth(x+3).unwrap() == 'X' && input[y+1].chars().nth(x+2).unwrap() == 'M' && input[y+2].chars().nth(x+1).unwrap() == 'A' && input[y+3].chars().nth(x).unwrap() == 'S';
+    let diagonal_left_reverse: bool = input[y].chars().nth(x+3).unwrap() == 'S' && input[y+1].chars().nth(x+2).unwrap() == 'A' && input[y+2].chars().nth(x+1).unwrap() == 'M' && input[y+3].chars().nth(x).unwrap() == 'X';
  
  
     diagonal_right || diagonal_right_reverse || diagonal_left || diagonal_left_reverse
@@ -72,6 +72,12 @@ fn part1() -> i32 {
 
             if sizey - y >= 4 {   
                 if is_xmax_vertical(x, y, &lines) {
+                    sum += 1;
+                }
+            }
+
+            if sizey - y >= 4 && sizex - x >= 4 {   
+                if is_xmax_diagonal(x, y, &lines) {
                     sum += 1;
                 }
             }
