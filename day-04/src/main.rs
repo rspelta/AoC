@@ -10,6 +10,37 @@ fn is_xmax_vertical(x: usize, y: usize, input: &Vec<&str>) -> bool {
     
     normal || reverse
 }
+
+fn is_xmax_diagonal(x: usize, y: usize, input: &Vec<&str>) -> bool {
+    let diagonal_right: bool = input[y].chars().nth(x).unwrap() == 'X' && input[y+1].chars().nth(x+1).unwrap() == 'M' && input[y+2].chars().nth(x+2).unwrap() == 'A' && input[y+3].chars().nth(x+3).unwrap() == 'S';
+    let diagonal_right_reverse: bool = input[y].chars().nth(x).unwrap() == 'S' && input[y+1].chars().nth(x+1).unwrap() == 'A' && input[y+2].chars().nth(x+2).unwrap() == 'M' && input[y+3].chars().nth(x+3).unwrap() == 'X';
+ 
+    let diagonal_left: bool = input[y].chars().nth(x).unwrap() == 'X' && input[y-1].chars().nth(x-1).unwrap() == 'M' && input[y-2].chars().nth(x-2).unwrap() == 'A' && input[y-3].chars().nth(x-3).unwrap() == 'S';
+    let diagonal_left_reverse: bool = input[y].chars().nth(x).unwrap() == 'S' && input[y-1].chars().nth(x-1).unwrap() == 'A' && input[y-2].chars().nth(x-2).unwrap() == 'M' && input[y-3].chars().nth(x-3).unwrap() == 'X';
+ 
+ 
+    diagonal_right || diagonal_right_reverse || diagonal_left || diagonal_left_reverse
+}
+
+/*
+
+fn is_mas(x: usize, y: usize, input: &Vec<&str>) -> bool {
+    let normal: bool = input[y].chars().nth(x).unwrap() == 'M' && input[y+1].chars().nth(x+1).unwrap() == 'A' && input[y+2].chars().nth(x+2).unwrap() == 'S' &&
+                        input[y].chars().nth(x+2).unwrap() == 'M' && input[y].chars().nth(x+2).unwrap() == 'S';
+
+    let reverse: bool = input[y].chars().nth(x).unwrap() == 'M' && input[y+1].chars().nth(x+1).unwrap() == 'A' && input[y+2].chars().nth(x+2).unwrap() == 'S' &&
+                        input[y].chars().nth(x+2).unwrap() == 'M' && input[y].chars().nth(x+2).unwrap() == 'S';
+
+    let reverse1: bool = input[y].chars().nth(x).unwrap() == 'M' && input[y+1].chars().nth(x+1).unwrap() == 'A' && input[y+2].chars().nth(x+2).unwrap() == 'S' &&
+                         input[y].chars().nth(x+2).unwrap() == 'S' && input[y].chars().nth(x+2).unwrap() == 'M';
+
+    let reverse2: bool = input[y].chars().nth(x).unwrap() == 'S' && input[y+1].chars().nth(x+1).unwrap() == 'A' && input[y+2].chars().nth(x+2).unwrap() == 'M' &&
+                         input[y].chars().nth(x+2).unwrap() == 'M' && input[y].chars().nth(x+2).unwrap() == 'S';
+    
+    normal || reverse || reverse1 || reverse2
+}
+    */
+
 /*
 // not working
 fn isXmasVertical(x i32, y i32, input Vec<Vec<i32>>) -> bool {
