@@ -41,7 +41,7 @@ fn is_mas2(x: usize, y: usize, input: &Vec<&str>) -> bool {
 }
 
 fn is_mas3(x: usize, y: usize, input: &Vec<&str>) -> bool {
-    input[y].chars().nth(x).unwrap() == 'M' && input[y+1].chars().nth(x+1).unwrap() == 'A' && input[y+2].chars().nth(x+2).unwrap() == 'S' &&
+    input[y].chars().nth(x).unwrap() == 'S' && input[y+1].chars().nth(x+1).unwrap() == 'A' && input[y+2].chars().nth(x+2).unwrap() == 'M' &&
                          input[y].chars().nth(x+2).unwrap() == 'S' && input[y+2].chars().nth(x).unwrap() == 'M'
 }
 
