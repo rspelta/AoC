@@ -103,16 +103,7 @@ fn part2() -> i32 {
         for x in 0..sizey {
 
             if sizey - y >= 3 && sizex - x >= 3 {   
-                if is_mas1(x, y, &lines) {
-                    sum += 1;
-                }
-                if is_mas2(x, y, &lines) {
-                    sum += 1;
-                }
-                if is_mas3(x, y, &lines) {
-                    sum += 1;
-                }
-                if is_mas4(x, y, &lines) {
+                if is_mas1(x, y, &lines) || is_mas2(x, y, &lines) || is_mas3(x, y, &lines) || is_mas4(x, y, &lines) {
                     sum += 1;
                 }
             }
