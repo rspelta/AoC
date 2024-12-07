@@ -54,7 +54,7 @@ fn is_mas4(x: usize, y: usize, input: &Vec<&str>) -> bool {
 fn part1() -> i32 {
     let text = include_str!("./input.txt");
     let mut sum : i32 = 0;
-
+    
     let lines: Vec<&str> = text.lines().collect();
 
     let sizex: usize = lines[0].len() as usize;
