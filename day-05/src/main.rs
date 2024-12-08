@@ -43,22 +43,25 @@ fn are_pages_valid(pages: &[i32], checklist: &Vec<i32>) -> bool {
     true
 }
 
-fn scramble( pages: &[i32] ) -> Vec<i32> {
+fn scramble( pages: &[i32], rng: &mut rand::rngs::ThreadRng ) -> Vec<i32> {
     let mut new_pages: Vec<i32> = Vec::new();
     for page in pages {
         new_pages.push(*page);
     }
-    new_pages.shuffle(&mut thread_rng());
+    new_pages.shuffle(rng);
     new_pages
 }
 
 fn part2() -> i32 {
     let text = include_str!("./input.txt");
     let mut sum : i32 = 0;
+    let mut counter : i32 = 0;
 
     let dizionario = extract_numbers(text);
 
     let start_line_pages = get_line_pages(text);
+
+    let mut rng = thread_rng();
 
     for line in text.lines().skip(start_line_pages) 
     {
@@ -78,15 +81,16 @@ fn part2() -> i32 {
                 }
             }
             if !is_valid {
-                pages = scramble(&pages);
-                println!("God wants: {:?} ", pages);
+                pages = scramble(&pages, &mut rng);
+                println!("Rangod-{}: {:?} ", counter, pages);
             }
             if is_valid {
                 break;
             }
         }
         if is_valid {
-            sum += pages[pages.len()/2]
+            sum += pages[pages.len()/2];
+            counter += 1;
         }
     }
 
