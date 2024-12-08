@@ -1,6 +1,8 @@
 use std::collections::HashMap;
+use rand::{seq::SliceRandom, thread_rng};
 
 fn main() {
+    let mut rng = thread_rng();
     let ordering = load_ordering();
 
     let update_input = include_str!("../updates.maz.txt");
@@ -9,6 +11,7 @@ fn main() {
     let mut res: i32 = 0;
 
     for line in update_lines {
+        println!("START FOR LINE {}", line);
         let mut numbers: Vec<i32> = Vec::new();
 
         for n in line.split(",") {
@@ -17,18 +20,26 @@ fn main() {
         }
 
         let mut is_valid = true;
-        for (i, v) in numbers.iter().enumerate().rev() {
-            if ordering.contains_key(v) {
-                if !is_update_valid(numbers[..i].to_vec(), ordering.get(v).unwrap()) {
-                    is_valid = false;
-                    break
+
+        loop {
+            for (i, v) in numbers.iter().enumerate().rev() {
+                if ordering.contains_key(v) {
+                    if !is_update_valid(numbers[..i].to_vec(), ordering.get(v).unwrap()) {
+                        is_valid = false;
+                        break
+                    }
                 }
             }
-        }
 
-        if is_valid {
-            res += numbers[(numbers.len())/2];
+            if is_valid {
+                res += numbers[(numbers.len())/2];
+                println!("DONE: line: {}, shuffled to: {:?}. CURRENT RES: {}", line, numbers, res);
+                break
+            } else {
+                numbers.shuffle(&mut rng);
+            }
         }
+        
     }
 
     println!("{}", res);
