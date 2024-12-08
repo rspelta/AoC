@@ -62,10 +62,11 @@ fn part2() -> i32 {
 
     for line in text.lines().skip(start_line_pages) 
     {
-        let mut is_valid = true;
+        println!("Line: {:?} ", line);
+        let mut is_valid;
         let mut pages: Vec<i32> = line.split(',').filter_map(|s| s.parse().ok()).collect();
 
-        while !is_valid {
+        loop {
             is_valid = true;
             for (i, v) in pages.iter().enumerate().rev() { 
                 if dizionario.contains_key(&v) {
@@ -78,6 +79,10 @@ fn part2() -> i32 {
             }
             if !is_valid {
                 pages = scramble(&pages);
+                println!("God wants: {:?} ", pages);
+            }
+            if is_valid {
+                break;
             }
         }
         if is_valid {
