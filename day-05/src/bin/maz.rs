@@ -19,9 +19,9 @@ fn main() {
             numbers.push(value);
         }
 
-        let mut is_valid = true;
-
+        
         loop {
+            let mut is_valid = true;
             for (i, v) in numbers.iter().enumerate().rev() {
                 if ordering.contains_key(v) {
                     if !is_update_valid(numbers[..i].to_vec(), ordering.get(v).unwrap()) {
@@ -37,6 +37,7 @@ fn main() {
                 break
             } else {
                 numbers.shuffle(&mut rng);
+
             }
         }
         
