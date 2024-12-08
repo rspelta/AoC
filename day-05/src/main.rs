@@ -1,4 +1,6 @@
 use std::collections::HashMap;
+use rand::seq::SliceRandom; // Importa il trait necessario
+use rand::thread_rng;
 
 fn extract_numbers(text: &str) -> HashMap<i32, Vec<i32>> {
     let mut dizionario: HashMap<i32, Vec<i32>> = HashMap::new();
@@ -41,6 +43,51 @@ fn are_pages_valid(pages: &[i32], checklist: &Vec<i32>) -> bool {
     true
 }
 
+fn scramble( pages: &[i32] ) -> Vec<i32> {
+    let mut new_pages: Vec<i32> = Vec::new();
+    for page in pages {
+        new_pages.push(*page);
+    }
+    new_pages.shuffle(&mut thread_rng());
+    new_pages
+}
+
+fn part2() -> i32 {
+    let text = include_str!("./input.txt");
+    let mut sum : i32 = 0;
+
+    let dizionario = extract_numbers(text);
+
+    let start_line_pages = get_line_pages(text);
+
+    for line in text.lines().skip(start_line_pages) 
+    {
+        let mut is_valid = true;
+        let mut pages: Vec<i32> = line.split(',').filter_map(|s| s.parse().ok()).collect();
+
+        while !is_valid {
+            is_valid = true;
+            for (i, v) in pages.iter().enumerate().rev() { 
+                if dizionario.contains_key(&v) {
+                    let checklist = dizionario.get(&v).unwrap();
+                    if !are_pages_valid( &pages[0..i], checklist ) {
+                        is_valid = false;
+                        break;
+                    }
+                }
+            }
+            if !is_valid {
+                pages = scramble(&pages);
+            }
+        }
+        if is_valid {
+            sum += pages[pages.len()/2]
+        }
+    }
+
+    sum
+}
+
 fn part1() -> i32 {
     let text = include_str!("./input.txt");
     let mut sum : i32 = 0;
@@ -80,5 +127,5 @@ fn part1() -> i32 {
 
 fn main() {
     println!("{}", part1());
-    // println!("{}", part2());
+    println!("{}", part2());
 }
