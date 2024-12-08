@@ -82,9 +82,9 @@ fn part2() -> i32 {
             }
             if !is_valid {
                 pages = scramble(&pages, &mut rng);
-                println!("Rangod-{}: {:?} ", counter, pages);
             }
             if is_valid {
+                println!("Rangod-{}: {:?} ", counter, pages);
                 break;
             }
         }
