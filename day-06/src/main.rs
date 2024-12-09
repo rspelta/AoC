@@ -1,10 +1,8 @@
 
+#[derive(Debug)]
+struct Location(i32, i32, char);
 
-fn part1() -> i32 {
-    let text = include_str!("./input.txt");
-    let mut sum : i32 = 0;
-    #[derive(Debug)]
-    struct Location(i32, i32, char);
+fn read_map( text: &str) -> (Vec<Location>, Location) {
 
     let mut map = Vec::new();
     let mut start: Location = Location(0, 0, '#');
@@ -23,6 +21,16 @@ fn part1() -> i32 {
             }
         }
     }
+    ( map, start)
+}
+
+fn part1() -> i32 {
+    let text = include_str!("./input.txt");
+    let mut sum : i32 = 0;
+
+
+    let (map, start) = read_map(&text);
+
     println!("map size: {:#?}, start: {:?}", map, start);
     sum
 }
