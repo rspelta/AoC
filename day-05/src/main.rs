@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 use rand::seq::SliceRandom; // Importa il trait necessario
 use rand::thread_rng;
+use std::io::{self, Write};
+
 
 fn extract_numbers(text: &str) -> HashMap<i32, Vec<i32>> {
     let mut dizionario: HashMap<i32, Vec<i32>> = HashMap::new();
@@ -56,6 +58,7 @@ fn part2() -> i32 {
     let text = include_str!("./input.txt");
     let mut sum : i32 = 0;
     let mut counter : i32 = 0;
+    let mut scramble_counter : i32 = 0;
 
     let dizionario = extract_numbers(text);
 
@@ -82,9 +85,16 @@ fn part2() -> i32 {
             }
             if !is_valid {
                 pages = scramble(&pages, &mut rng);
+                scramble_counter += 1;
+                if scramble_counter % 100000000 == 0 {
+                    print!(".");
+                    io::stdout().flush().unwrap();
+                    scramble_counter=0;
+                }
             }
             if is_valid {
-                println!("Rangod-{}: {:?} ", counter, pages);
+                println!("Rangod-{}: {:?}, sum: {} ", counter, pages, sum);
+                scramble_counter=0;
                 break;
             }
         }
