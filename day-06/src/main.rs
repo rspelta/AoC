@@ -5,8 +5,12 @@
 struct Location(i32, i32);
 struct Segment(i32, i32, i32, i32);
 
-const SIZE_X : i32 = 10;
-const SIZE_Y : i32 = 10;
+//const SIZE_X : i32 = 9;
+//const SIZE_Y : i32 = 9;
+
+const SIZE_X : i32 = 129;
+const SIZE_Y : i32 = 129;
+
 
 enum Directions {
     Up,
@@ -123,7 +127,7 @@ fn create_all_points( path: &Vec<Segment>) -> Vec<Location> {
         if seg.0 == seg.2 {
             let min: i32 = if seg.1 < seg.3 { seg.1 } else { seg.3 };
             let max: i32 = if seg.1 < seg.3 { seg.3 } else { seg.1 };
-            for y in min..max {
+            for y in min..=max {
                 if !all.contains(&Location(seg.0, y)) {
                     all.push(Location(seg.0, y));    
                 }
@@ -133,7 +137,7 @@ fn create_all_points( path: &Vec<Segment>) -> Vec<Location> {
         if seg.1 == seg.3 {
             let min: i32 = if seg.0 < seg.2 { seg.0 } else { seg.2 };
             let max: i32 = if seg.0 < seg.2 { seg.2 } else { seg.0 };
-            for x in min..max {
+            for x in min..=max {
                 if !all.contains(&Location(x, seg.1)) {
                     all.push(Location(x, seg.1));
                 }
@@ -141,12 +145,13 @@ fn create_all_points( path: &Vec<Segment>) -> Vec<Location> {
             continue;
         }
     }
-    println!("all: {:#?}", all);
+    //println!("all: {:#?}", all);
     all
 }
 
 fn part1() -> i32 {
-    let text = include_str!("./input_example.txt");
+    //let text = include_str!("./input_example.txt");
+    let text = include_str!("./input.txt");
 
     let (map, start) = read_map(&text);
 
