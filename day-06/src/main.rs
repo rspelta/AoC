@@ -1,8 +1,11 @@
 
 
-#[derive(Debug)]
-#[derive(PartialEq)]
+
+
+#[derive(Debug,PartialEq,Clone)]
 struct Location(i32, i32);
+
+#[derive(Debug,PartialEq,Clone)]
 struct Segment(i32, i32, i32, i32);
 
 //const SIZE_X : i32 = 9;
@@ -11,7 +14,7 @@ struct Segment(i32, i32, i32, i32);
 const SIZE_X : i32 = 129;
 const SIZE_Y : i32 = 129;
 
-
+#[derive(Debug,PartialEq,Clone)]
 enum Directions {
     Up,
     Right,
@@ -35,11 +38,10 @@ fn read_map( text: &str) -> (Vec<Location>, Location) {
                     start = Location(x as i32, y as i32)
                 }
                 _ => {}
-
             }
         }
     }
-    ( map, start)
+    ( map, start )
 }
 
 fn go_up( pos: &Location, map: &Vec<Location>) -> Segment {
@@ -115,11 +117,50 @@ fn calc_path( start: &Location, map: &Vec<Location>) -> Vec<Segment> {
     return path;
 }
 
-/* 
-fn calc_distance( path: &Vec<Segment>) -> i32 {
-    path.iter().fold(0, |sum, seg| sum + (seg.0 - seg.2).abs() + (seg.1 - seg.3).abs())
+fn calc_path_with_direction( start: &Location, map: &Vec<Location>) -> Option<Vec<(Segment,Directions)>> {
+
+    let mut dir = Directions::Up;
+
+    let mut path = Vec::new();
+    let mut pos: Location = Location( start.0, start.1);
+    let mut seg: (Segment, Directions);
+
+    loop {
+        match dir {
+            Directions::Up => {
+                seg = (go_up( &pos, &map ), Directions::Up);
+                dir = Directions::Right;
+            }
+            Directions::Right => {
+                seg = (go_right( &pos, &map ), Directions::Right);
+                dir = Directions::Down;
+            }
+            Directions::Down => {
+                seg = (go_down( &pos, &map ), Directions::Down);
+                dir = Directions::Left;
+            }
+            Directions::Left => {
+                seg = (go_left( &pos, &map ), Directions::Left);
+                dir = Directions::Up;
+            }
+        }
+        pos = Location(seg.0.2, seg.0.3);
+
+        
+        if path.contains( &seg ) {
+        //if path.iter().filter(|(s, p)| s == &seg.0 && p == &seg.1).count() > 0 {
+            return None;
+        }
+
+        path.push( seg );
+
+        if is_border( &pos ) {
+            break;
+        }
+    }
+    return Some(path);
 }
-*/
+
 fn create_all_points( path: &Vec<Segment>) -> Vec<Location> {
     let mut all = Vec::new();
 
@@ -157,12 +198,43 @@ fn part1() -> i32 {
 
     let path = calc_path( &start, &map );
 
-    //println!("map size: {:#?}, start: {:?}", map, start);
     create_all_points(&path).len() as i32
-    //calc_distance( &path )
+}
+
+
+fn extract_path( path_dir: &Vec<(Segment,Directions)>) -> Vec<Segment> {
+    path_dir.iter().map(|seg| seg.0.clone()).collect()
+}
+
+fn part2() -> i32 {
+    //let text = include_str!("./input_example.txt");
+    let text = include_str!("./input.txt");
+
+    let (map, start) = read_map(&text);
+
+    let mut path_dir = calc_path_with_direction( &start, &map ).unwrap();
+
+    path_dir.remove(0);  // la guardia non deve vedere i nuovi ostacoli
+
+    let all_points = create_all_points(&extract_path(&path_dir));
+
+    let mut infinite_loop = 0;
+
+    for loc in all_points {
+        if loc.0 == start.0 && loc.1 == start.1 {
+            continue;
+        }
+        let mut map_with_i_hope_infinite_loop = map.clone();
+        map_with_i_hope_infinite_loop.push(loc.clone());
+        if calc_path_with_direction( &start, &map_with_i_hope_infinite_loop ).is_none() {
+            infinite_loop+=1;
+        }
+    }
+
+    infinite_loop
 }
 
 fn main() {
     println!("{}", part1());
-    //println!("{}", part2());
+    println!("{}", part2());
 }
