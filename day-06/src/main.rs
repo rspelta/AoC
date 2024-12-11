@@ -146,7 +146,6 @@ fn calc_path_with_direction( start: &Location, map: &Vec<Location>) -> Option<Ve
         }
         pos = Location(seg.0.2, seg.0.3);
 
-        
         if path.contains( &seg ) {
         //if path.iter().filter(|(s, p)| s == &seg.0 && p == &seg.1).count() > 0 {
             return None;
@@ -157,6 +156,10 @@ fn calc_path_with_direction( start: &Location, map: &Vec<Location>) -> Option<Ve
         if is_border( &pos ) {
             break;
         }
+/*
+        if path.len() > 130*130 {
+            return None;
+        }*/
     }
     return Some(path);
 }
@@ -190,6 +193,42 @@ fn create_all_points( path: &Vec<Segment>) -> Vec<Location> {
     all
 }
 
+fn create_all_points_no_guard( path: &Vec<Segment>) -> Vec<Location> {
+    let mut all = Vec::new();
+
+    let mut guard : Vec<Location> = Vec::new();
+    for y in path[0].1..=path[0].3 {
+        guard.push(Location(path[0].0, y));
+    };
+    
+
+    for seg in path {
+        if seg.0 == seg.2 {
+            let min: i32 = if seg.1 < seg.3 { seg.1 } else { seg.3 };
+            let max: i32 = if seg.1 < seg.3 { seg.3 } else { seg.1 };
+            for y in min..=max {
+                if !all.contains(&Location(seg.0, y)) && !guard.contains(&Location(seg.0, y)) {
+                    all.push(Location(seg.0, y));    
+                }
+            }
+            continue;
+        }
+        if seg.1 == seg.3 {
+            let min: i32 = if seg.0 < seg.2 { seg.0 } else { seg.2 };
+            let max: i32 = if seg.0 < seg.2 { seg.2 } else { seg.0 };
+            for x in min..=max {
+                if !all.contains(&Location(x, seg.1)) && !guard.contains(&Location(x, seg.1)) {
+                    all.push(Location(x, seg.1));
+                }
+            }
+            continue;
+        }
+    }
+    //println!("all: {:#?}", all);
+    all
+}
+
+
 fn part1() -> i32 {
     //let text = include_str!("./input_example.txt");
     let text = include_str!("./input.txt");
@@ -212,22 +251,19 @@ fn part2() -> i32 {
 
     let (map, start) = read_map(&text);
 
-    let mut path_dir = calc_path_with_direction( &start, &map ).unwrap();
+    let path_dir = calc_path_with_direction( &start, &map ).unwrap();
 
-    path_dir.remove(0);  // la guardia non deve vedere i nuovi ostacoli
-
-    let all_points = create_all_points(&extract_path(&path_dir));
+    let all_points = create_all_points_no_guard(&extract_path(&path_dir));
 
     let mut infinite_loop = 0;
 
     for loc in all_points {
-        if loc.0 == start.0 && loc.1 == start.1 {
-            continue;
-        }
-        let mut map_with_i_hope_infinite_loop = map.clone();
-        map_with_i_hope_infinite_loop.push(loc.clone());
-        if calc_path_with_direction( &start, &map_with_i_hope_infinite_loop ).is_none() {
-            infinite_loop+=1;
+        if loc.0 != start.0 || loc.1 != start.1 {
+            let mut map_with_i_hope_infinite_loop = map.clone();
+            map_with_i_hope_infinite_loop.push(loc.clone());
+            if calc_path_with_direction( &start, &map_with_i_hope_infinite_loop ).is_none() {
+                infinite_loop+=1;
+            }
         }
     }
 
