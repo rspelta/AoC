@@ -41,7 +41,7 @@ fn calc_antinodes( antennas: &Vec<Antenna>, antinodes: Vec<Antenna>) -> Vec<Ante
     anti
 }
 
-fn remove_antennas( antennas: Vec<Antenna>, antinodes: Vec<Antenna>) -> Vec<Antenna> { 
+fn remove_antennas( antennas: &Vec<Antenna>, antinodes: Vec<Antenna>) -> Vec<Antenna> { 
 
     let mut filtered_antinodes = antinodes;
 
@@ -58,14 +58,12 @@ fn part1() -> u32 {
     let text = include_str!("input.txt");
     let map = read_map(text);
 
-    let map2 = map.clone();
-
     let mut anti = Vec::new();
-    for (_, antennas) in map {
+    for (_, antennas) in &map {
         anti.extend( calc_antinodes(&antennas, anti.clone()) );
     }
     println!("{}", anti.len());
-    for (_, antennas) in map2 {
+    for (_, antennas) in &map {
         anti = remove_antennas( antennas,  anti);
     }
     //println!("{:?}", anti);
