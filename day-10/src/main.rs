@@ -25,6 +25,46 @@ fn find_start_points( text: &str) -> (Vec<Vec<u32>>, Vec<Points>)
     (array, start)
 }
 
+fn foo2( map: &Vec<Vec<u32>>, point: Points, counter: &mut Vec<Points> ) {
+
+    //println!("{}", map[point.1][point.0]);
+    
+    if map[point.1][point.0] == 9 {
+        counter.push(point);
+        return
+    }
+
+    let next_step = map[point.1][point.0]+1;
+
+    // su
+    if point.1 > 0 {
+        if map[point.1-1][point.0] == next_step {
+            foo2( map, Points(point.0, point.1-1), counter );
+        }
+    }
+
+    // dx
+    if point.0 < map[0].len()-1 {
+        if map[point.1][point.0+1] == next_step {
+            foo2( map, Points(point.0+1, point.1), counter );
+        }
+    }
+
+    // sx
+    if point.0 > 0 {
+        if map[point.1][point.0-1] == next_step {
+            foo2( map, Points(point.0-1, point.1), counter );
+        }
+    }
+
+    // dn
+    if point.1 < map.len()-1 {
+        if map[point.1+1][point.0] == next_step {
+            foo2( map, Points(point.0, point.1+1), counter );
+        }
+    }
+}
+
 
 fn foo( map: &Vec<Vec<u32>>, point: Points, counter: &mut Vec<Points> ) {
 
@@ -37,7 +77,7 @@ fn foo( map: &Vec<Vec<u32>>, point: Points, counter: &mut Vec<Points> ) {
         return
     }
 
-    let next_step = if map[point.1][point.0] < 9 { map[point.1][point.0]+1 } else { map[point.1][point.0] };
+    let next_step = map[point.1][point.0]+1;
 
     // su
     if point.1 > 0 {
@@ -68,6 +108,22 @@ fn foo( map: &Vec<Vec<u32>>, point: Points, counter: &mut Vec<Points> ) {
     }
 }
 
+fn part2() -> u32 {
+    let text = include_str!("input.txt");
+    let (map, start) = find_start_points(text);
+    let mut counter: Vec<Points> = Vec::new();
+    let mut sum = 0;
+
+    for point in start {
+        foo2( &map, point, &mut counter );
+        sum += counter.len() as u32;
+        counter.clear();
+    }
+    //println!("{:?} {:?}", map, start);
+    sum
+}
+
+
 fn part1() -> u32 {
     let text = include_str!("input.txt");
     let (map, start) = find_start_points(text);
@@ -85,5 +141,5 @@ fn part1() -> u32 {
 
 fn main() {
     println!("{}", part1());
-    //println!("{}", part2());
+    println!("{}", part2());
 }
