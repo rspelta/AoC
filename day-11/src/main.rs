@@ -1,4 +1,4 @@
-use memoize::memoize;
+use std::collections::HashMap;
 
 fn step( stones : &mut Vec<u64> ) {
     let mut index = 0;
@@ -51,25 +51,37 @@ fn split_number( value : u64 ) -> (u64, u64) {
     (left, right)
 }
 
-#[memoize]
-fn foo( value : u64, step : u8 ) -> u64
+
+fn foo( value : u64, step : u8, memo : &mut HashMap<(u64,u8), u64> ) -> u64
 {
+    if memo.contains_key(&(value, step)) {
+        return memo[&(value, step)];
+    }
+
     if step == 75 {
+        memo.insert((value, step), 1);
         return 1;
     }
 
     if value == 0 {
-       return foo( 1, step+1 );
+       let ret = foo( 1, step+1, memo );
+       memo.insert((value, step), ret);
+       return ret;
     } else if value.to_string().len() % 2 == 0 {
         let (left, right) = split_number( value );
-        return foo( left, step+1 ) + foo( right, step+1 );
+        let ret = foo( left, step+1, memo ) + foo( right, step+1, memo );
+        memo.insert((value, step), ret);
+        return ret;
     } else {
-        return foo( value * 2024, step+1 )
+        let ret = foo( value * 2024, step+1, memo );
+        memo.insert((value, step), ret);
+        return ret;
     }
 }
 
 fn part2() -> u64 {
     let mut sum = 0;
+    let mut memo = HashMap::new();
 
     let stones: Vec<u64> = include_str!("input.txt")
         .split_whitespace() // Divide la stringa usando gli spazi
@@ -77,7 +89,7 @@ fn part2() -> u64 {
         .collect();
 
     for stone in stones {
-        sum += foo( stone, 0 );
+        sum += foo( stone, 0, &mut memo );
     }
     sum
 }
