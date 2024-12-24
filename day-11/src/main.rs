@@ -63,20 +63,19 @@ fn foo( value : u64, step : u8, memo : &mut HashMap<(u64,u8), u64> ) -> u64
         return 1;
     }
 
+    let ret;
+
     if value == 0 {
-       let ret = foo( 1, step+1, memo );
-       memo.insert((value, step), ret);
-       return ret;
+       ret = foo( 1, step+1, memo );
     } else if value.to_string().len() % 2 == 0 {
-        let (left, right) = split_number( value );
-        let ret = foo( left, step+1, memo ) + foo( right, step+1, memo );
-        memo.insert((value, step), ret);
-        return ret;
+       let (left, right) = split_number( value );
+       ret = foo( left, step+1, memo ) + foo( right, step+1, memo );
     } else {
-        let ret = foo( value * 2024, step+1, memo );
-        memo.insert((value, step), ret);
-        return ret;
+       ret = foo( value * 2024, step+1, memo );
     }
+
+    memo.insert((value, step), ret);
+    return ret;
 }
 
 fn part2() -> u64 {
