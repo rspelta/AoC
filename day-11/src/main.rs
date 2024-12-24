@@ -1,5 +1,4 @@
-//use memoize::memoize;
-use std::collections::HashMap;
+use memoize::memoize;
 
 fn step( stones : &mut Vec<u64> ) {
     let mut index = 0;
@@ -45,56 +44,31 @@ fn part1() -> usize {
     stones.len()
 }
 
-fn count_digits(mut n: u64) -> u64 {
-    if n == 0 {
-        return 1; // Se il numero è 0, ha 1 cifra
-    }
-
-    let mut count = 0;
-    while n > 0 {
-        n /= 10; // Rimuove l'ultima cifra
-        count += 1; // Incrementa il conteggio
-    }
-    count
+fn split_number( value : u64 ) -> (u64, u64) {
+    let str_num = value.to_string();
+    let left = str_num.split_at(str_num.len() >> 1).0.parse::<u64>().unwrap();
+    let right = str_num.split_at(str_num.len() >> 1).1.parse::<u64>().unwrap();
+    (left, right)
 }
 
-//#[memoize]
-fn foo( value : u64, mut step : u8, counter : &mut u64, memo : &mut HashMap<u64, Vec<u64>> )
+#[memoize]
+fn foo( value : u64, step : u8 ) -> u64
 {
-    step += 1;
-
-    if step == 76 {
-        *counter+=1;
-        return;
+    if step == 75 {
+        return 1;
     }
-
-    if let Some(result) = memo.get(&value).cloned() {
-        for res in result {
-            foo( res, step, counter, memo );
-        }
-        return;
-    }
-
-    let num_len: usize = count_digits(value) as usize;
 
     if value == 0 {
-        memo.insert(value, Vec::from([1]));
-        foo( 1, step, counter, memo );
-    } else if num_len % 2 == 0 {
-        let str_num = value.to_string();
-        let left = str_num.split_at(num_len >> 1).0.parse::<u64>().unwrap();
-        let right = str_num.split_at(num_len >> 1).1.parse::<u64>().unwrap();
-        memo.insert(value, Vec::from([left, right]));
-        foo( left, step, counter, memo );
-        foo( right, step, counter, memo );
+       return foo( 1, step+1 );
+    } else if value.to_string().len() % 2 == 0 {
+        let (left, right) = split_number( value );
+        return foo( left, step+1 ) + foo( right, step+1 );
     } else {
-        memo.insert(value, Vec::from([value*2024]));
-        foo( value * 2024, step, counter, memo );
+        return foo( value * 2024, step+1 )
     }
 }
 
 fn part2() -> u64 {
-    let mut memo = HashMap::new();
     let mut sum = 0;
 
     let stones: Vec<u64> = include_str!("input.txt")
@@ -103,9 +77,7 @@ fn part2() -> u64 {
         .collect();
 
     for stone in stones {
-        let mut counter = 0;
-        foo( stone, 0, &mut counter, &mut memo );
-        sum += counter;
+        sum += foo( stone, 0 );
     }
     sum
 }
