@@ -9,8 +9,8 @@ struct Point {
 
 struct Region {
     // String is a struct
-    animal_type: char,
-    name: Vec<Point>,
+    plant_type: char,
+    plots: Vec<Point>,
     area: u32,
     perimeter: i32,
 }
@@ -38,7 +38,7 @@ fn get_regions(garden: &mut Vec<Vec<char>>) -> Vec<Region> {
     for y in 0..garden.len() {
         for x in 0..garden[y].len() {
             if garden[y][x] != '.' {
-                let region = Region { animal_type: garden[y][x], name: Vec::new(), area: 0, perimeter: 0 };
+                let region = Region { plant_type: garden[y][x], plots: Vec::new(), area: 0, perimeter: 0 };
                 region.fill_region(x as u32, y as u32, garden );
                 regions.push(region);
             }
