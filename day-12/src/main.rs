@@ -128,22 +128,6 @@ impl Calc for Region {
                 }
             }
         }
-/*
-        if self.plots.len() > 1 {
-            for y in min_y..=max_y {
-                for x in min_x..=max_x {
-                    if self.sides.contains( &Point { x: x, y: y } ) {
-                        if !self.sides.contains( &Point { x: x + 1, y } ) &&
-                        !self.sides.contains( &Point { x: x - 1, y } ) &&
-                        !self.sides.contains( &Point { x: x, y: y + 1 } ) &&
-                        !self.sides.contains( &Point { x: x, y: y - 1 } ) {
-                            sides += 4;
-                        }
-                    }
-                }
-            }
-        }
-*/
         sides
     }
 
