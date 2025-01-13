@@ -1,3 +1,5 @@
+use std::os::unix::net::SocketAddr;
+
 use regex::Regex;
 
 const MAP_X: i32 = 101;
@@ -98,8 +100,6 @@ fn part1() -> u64 {
 
     let mut robots = create_robots(text);
 
-    println!("{:?}", robots);
-
     for _ in 0..100 {        
         for i in 0..robots.len() {
             robots[i].step1s();
@@ -111,8 +111,58 @@ fn part1() -> u64 {
     sum_area( &robots, 0, 0, (MAP_X/2)-1, (MAP_Y/2)-1) * sum_area( &robots, (MAP_X/2)+1, 0, MAP_X, (MAP_Y/2)-1) * sum_area( &robots, 0, (MAP_Y/2)+1, (MAP_X/2)-1, MAP_Y) * sum_area( &robots, (MAP_X/2)+1, (MAP_Y/2)+1, MAP_X, MAP_Y)
 }
 
+fn found_line( robots : &Vec<Robot> ) -> bool {
+    for y in 0..MAP_Y {
+        let x_positions: Vec<i32> = robots
+        .iter()
+        .filter(|r| r.position.y == y) // Considera solo i robot con y = y_target
+        .map(|r| r.position.x)
+        .collect();
+
+        if x_positions.len() >= 10 {    
+            // Ordina i punti (se non sono già ordinati)
+            let mut sorted_positions = x_positions.to_vec();
+            sorted_positions.sort_unstable();
+
+            let mut sum = 0;
+            for i in 0..sorted_positions.len()-1 {
+                if sorted_positions[i+1] - sorted_positions[i] <= 1 {
+                    sum += 1;
+                    if sum > 10 {
+                        return true;
+                    }
+                } else {
+                    sum = 0;
+                }
+            }
+        }
+    }
+    false
+}
+
+fn part2() -> u64 {
+    let text = include_str!("input.txt");
+
+    let mut robots = create_robots(text);
+
+    for sec in 0..90000000 {
+        for i in 0..robots.len() {
+            robots[i].step1s();
+        }
+
+        if found_line(&robots) {
+            println!("found line {}", sec+1);
+        }
+    }
+
+    //show_map(robots);
+
+    sum_area( &robots, 0, 0, (MAP_X/2)-1, (MAP_Y/2)-1) * sum_area( &robots, (MAP_X/2)+1, 0, MAP_X, (MAP_Y/2)-1) * sum_area( &robots, 0, (MAP_Y/2)+1, (MAP_X/2)-1, MAP_Y) * sum_area( &robots, (MAP_X/2)+1, (MAP_Y/2)+1, MAP_X, MAP_Y)
+}
+
+
 fn main() {
 
     println!("{}", part1() );
-    //println!("{}", part2() );
+    println!("{}", part2() );
 }
