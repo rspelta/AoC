@@ -1,0 +1,18 @@
+mappa, path percorsa
+
+se 9 e mai raggiunto aggiungi contatore e ritorna
+se 0 hai fatto una path metti 9 a 0 e salvalo
+
+
+se possibile (no punto già percorso, in mappa e +1)
+  su
+  
+se possibile 
+  sx
+
+se possibile
+  dx
+
+se possibile
+  dn
+  
