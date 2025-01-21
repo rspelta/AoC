@@ -104,7 +104,7 @@ fn find_consecutive_blocks(
     while let Some(&last_pos) = block_positions.last() {
         let (next_y, next_x) = get_next_position(last_pos, dy, dx);
         
-        if is_valid_position(char_map, next_y, next_x) && char_map[next_y][next_x] == 'O' {
+        if is_valid_position(char_map, next_y, next_x) && char_map[next_y][next_x] == BLOCK {
             block_positions.push((next_y, next_x));
         } else {
             break;
@@ -122,14 +122,14 @@ fn move_blocks_chain(
 ) {
     for &(y, x) in block_positions.iter().rev() {
         let (next_y, next_x) = get_next_position((y, x), dy, dx);
-        char_map[next_y][next_x] = 'O';
-        char_map[y][x] = '.';
+        char_map[next_y][next_x] = BLOCK;
+        char_map[y][x] = EMPTY;
     }
 }
 
 fn move_robot(char_map: &mut Vec<Vec<char>>, robot_pos: &mut (usize, usize), new_pos: (usize, usize)) {
-    char_map[new_pos.0][new_pos.1] = '@';
-    char_map[robot_pos.0][robot_pos.1] = '.';
+    char_map[new_pos.0][new_pos.1] = ROBOT;
+    char_map[robot_pos.0][robot_pos.1] = EMPTY;
     *robot_pos = new_pos;
 }
 
@@ -143,11 +143,11 @@ fn move_robot_on_map(
             let (dy, dx) = (direction.dy, direction.dx);
             let (new_y, new_x) = get_next_position(*robot_pos, dy, dx);
 
-            if !is_valid_position(char_map, new_y, new_x) || char_map[new_y][new_x] == '#' {
+            if !is_valid_position(char_map, new_y, new_x) || char_map[new_y][new_x] == WALL {
                 continue;
             }
 
-            if char_map[new_y][new_x] == 'O' {
+            if char_map[new_y][new_x] == BLOCK {
                 let block_positions = find_consecutive_blocks(char_map, (new_y, new_x), dy, dx);
                 let (last_y, last_x) = get_next_position(
                     *block_positions.last().unwrap(),
@@ -155,7 +155,7 @@ fn move_robot_on_map(
                     dx,
                 );
 
-                if is_valid_position(char_map, last_y, last_x) && char_map[last_y][last_x] == '.' {
+                if is_valid_position(char_map, last_y, last_x) && char_map[last_y][last_x] == EMPTY {
                     move_blocks_chain(char_map, &block_positions, dy, dx);
                     move_robot(char_map, robot_pos, (new_y, new_x));
                 }
@@ -171,7 +171,7 @@ fn sum_o_coordinates(char_map: &[Vec<char>]) -> u32 {
 
     for (y, row) in char_map.iter().enumerate() {
         for (x, &cell) in row.iter().enumerate() {
-            if cell == 'O' {
+            if cell == BLOCK {
                 // Calcola la coordinata usando la formula e aggiungila alla somma
                 sum += 100 * (y as u32) + (x as u32);
             }
