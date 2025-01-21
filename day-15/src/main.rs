@@ -1,6 +1,34 @@
 use std::fs::File;
 use std::io::{self, BufRead};
 
+// Game characters
+const ROBOT: char = '@';
+const BLOCK: char = 'O';
+const WALL: char = '#';
+const EMPTY: char = '.';
+
+// Position type alias
+type Position = (usize, usize);
+
+/// Represents a movement direction with its delta coordinates
+struct Direction {
+    symbol: char,
+    dy: isize,
+    dx: isize,
+}
+
+impl Direction {
+    fn from_char(c: char) -> Option<Direction> {
+        match c {
+            '^' => Some(Direction { symbol: '^', dy: -1, dx: 0 }),
+            'v' => Some(Direction { symbol: 'v', dy: 1, dx: 0 }),
+            '<' => Some(Direction { symbol: '<', dy: 0, dx: -1 }),
+            '>' => Some(Direction { symbol: '>', dy: 0, dx: 1 }),
+            _ => None
+        }
+    }
+}
+
 fn load_map_from_file(file_path: &str, n: usize) -> io::Result<Vec<Vec<char>>> {
     // Apri il file in modalità lettura
     let file = File::open(file_path)?;
@@ -36,14 +64,20 @@ fn extract_directions_from_file(file_path: &str) -> io::Result<Vec<char>> {
     Ok(directions)
 }
 
-fn find_at_coordinates(char_map: &Vec<Vec<char>>) -> Vec<(usize, usize)> {
+/// Finds all robot positions in the map
+/// 
+/// # Arguments
+/// * `char_map` - The game map
+/// 
+/// # Returns
+/// A vector of positions where robots are located
+fn find_at_coordinates(char_map: &Vec<Vec<char>>) -> Vec<Position> {
     let mut coordinates = Vec::new();
 
-    // Itera su ogni riga e colonna dell'array bidimensionale
     for (y, row) in char_map.iter().enumerate() {
         for (x, &cell) in row.iter().enumerate() {
-            if cell == '@' {
-                coordinates.push((y, x)); // Aggiungi le coordinate se trovi "@"
+            if cell == ROBOT {
+                coordinates.push((y, x));
             }
         }
     }
@@ -101,13 +135,12 @@ fn move_robot(char_map: &mut Vec<Vec<char>>, robot_pos: &mut (usize, usize), new
 
 fn move_robot_on_map(
     char_map: &mut Vec<Vec<char>>,
-    robot_pos: &mut (usize, usize),
+    robot_pos: &mut Position,
     moves: &str,
 ) {
-    let directions = vec![('^', -1, 0), ('v', 1, 0), ('<', 0, -1), ('>', 0, 1)];
-
-    for mv in moves.chars() {
-        if let Some(&(_, dy, dx)) = directions.iter().find(|&&(d, _, _)| d == mv) {
+    for movement in moves.chars() {
+        if let Some(direction) = Direction::from_char(movement) {
+            let (dy, dx) = (direction.dy, direction.dx);
             let (new_y, new_x) = get_next_position(*robot_pos, dy, dx);
 
             if !is_valid_position(char_map, new_y, new_x) || char_map[new_y][new_x] == '#' {
@@ -148,6 +181,13 @@ fn sum_o_coordinates(char_map: &[Vec<char>]) -> u32 {
     sum
 }
 
+/// Prints the current state of the map
+fn print_map(char_map: &Vec<Vec<char>>) {
+    for row in char_map {
+        println!("{}", row.iter().collect::<String>());
+    }
+}
+
 fn main() -> io::Result<()> {
     // Percorso del file contenente la mappa
     let file_path = "./src/input.txt";
@@ -161,10 +201,7 @@ fn main() -> io::Result<()> {
     // Estrai i simboli di direzione dal file
     let directions = extract_directions_from_file(file_path)?;
 
-    // Stampa l'intera mappa
-    for row in &char_map {
-        println!("{}", row.iter().collect::<String>());
-    }
+    print_map(&char_map);
     println!("Simboli di direzione trovati: {:?}", directions);
 
     let mut coordinates = find_at_coordinates(&char_map);
