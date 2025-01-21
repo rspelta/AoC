@@ -79,7 +79,12 @@ fn move_robot_on_map(
                 let mut block_positions = vec![(new_y, new_x)];
 
                 // Identifica tutti i blocchi consecutivi nella direzione del movimento
-                while let Some(&(last_y, last_x)) = block_positions.last() {
+                while let Some(&(last_y, last_x)) = block_positions.last        /* Stampa la mappa dopo ogni mossa (opzionale)
+                println!("Mossa '{}':", mv);
+                for row in char_map.iter() {
+                    println!("{}", row.iter().collect::<String>());
+                }
+                println!();*/() {
                     let next_y = (last_y as isize + dy) as usize;
                     let next_x = (last_x as isize + dx) as usize;
 
@@ -122,13 +127,6 @@ fn move_robot_on_map(
                 *robot_pos = (new_y, new_x);
             }
         }
-
-        /* Stampa la mappa dopo ogni mossa (opzionale)
-        println!("Mossa '{}':", mv);
-        for row in char_map.iter() {
-            println!("{}", row.iter().collect::<String>());
-        }
-        println!();*/
     }
 }
 
