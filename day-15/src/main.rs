@@ -51,80 +51,83 @@ fn find_at_coordinates(char_map: &Vec<Vec<char>>) -> Vec<(usize, usize)> {
     coordinates
 }
 
+fn is_valid_position(char_map: &Vec<Vec<char>>, y: usize, x: usize) -> bool {
+    y < char_map.len() && x < char_map[0].len()
+}
+
+fn get_next_position(pos: (usize, usize), dy: isize, dx: isize) -> (usize, usize) {
+    ((pos.0 as isize + dy) as usize, (pos.1 as isize + dx) as usize)
+}
+
+fn find_consecutive_blocks(
+    char_map: &Vec<Vec<char>>,
+    start_pos: (usize, usize),
+    dy: isize,
+    dx: isize,
+) -> Vec<(usize, usize)> {
+    let mut block_positions = vec![start_pos];
+    
+    while let Some(&last_pos) = block_positions.last() {
+        let (next_y, next_x) = get_next_position(last_pos, dy, dx);
+        
+        if is_valid_position(char_map, next_y, next_x) && char_map[next_y][next_x] == 'O' {
+            block_positions.push((next_y, next_x));
+        } else {
+            break;
+        }
+    }
+    
+    block_positions
+}
+
+fn move_blocks_chain(
+    char_map: &mut Vec<Vec<char>>,
+    block_positions: &[(usize, usize)],
+    dy: isize,
+    dx: isize,
+) {
+    for &(y, x) in block_positions.iter().rev() {
+        let (next_y, next_x) = get_next_position((y, x), dy, dx);
+        char_map[next_y][next_x] = 'O';
+        char_map[y][x] = '.';
+    }
+}
+
+fn move_robot(char_map: &mut Vec<Vec<char>>, robot_pos: &mut (usize, usize), new_pos: (usize, usize)) {
+    char_map[new_pos.0][new_pos.1] = '@';
+    char_map[robot_pos.0][robot_pos.1] = '.';
+    *robot_pos = new_pos;
+}
+
 fn move_robot_on_map(
     char_map: &mut Vec<Vec<char>>,
     robot_pos: &mut (usize, usize),
     moves: &str,
 ) {
-    // Definiamo i movimenti possibili con (direzione, delta_y, delta_x)
     let directions = vec![('^', -1, 0), ('v', 1, 0), ('<', 0, -1), ('>', 0, 1)];
 
     for mv in moves.chars() {
         if let Some(&(_, dy, dx)) = directions.iter().find(|&&(d, _, _)| d == mv) {
-            let new_y = (robot_pos.0 as isize + dy) as usize;
-            let new_x = (robot_pos.1 as isize + dx) as usize;
+            let (new_y, new_x) = get_next_position(*robot_pos, dy, dx);
 
-            // Controlla se la nuova posizione è dentro i limiti della mappa
-            if new_y >= char_map.len() || new_x >= char_map[0].len() {
+            if !is_valid_position(char_map, new_y, new_x) || char_map[new_y][new_x] == '#' {
                 continue;
             }
 
-            // Se c'è un muro, il robot non si muove
-            if char_map[new_y][new_x] == '#' {
-                continue;
-            }
-
-            // Se il robot incontra un blocco 'O', controlla se può spingerlo a catena
             if char_map[new_y][new_x] == 'O' {
-                let mut block_positions = vec![(new_y, new_x)];
+                let block_positions = find_consecutive_blocks(char_map, (new_y, new_x), dy, dx);
+                let (last_y, last_x) = get_next_position(
+                    *block_positions.last().unwrap(),
+                    dy,
+                    dx,
+                );
 
-                // Identifica tutti i blocchi consecutivi nella direzione del movimento
-                while let Some(&(last_y, last_x)) = block_positions.last        /* Stampa la mappa dopo ogni mossa (opzionale)
-                println!("Mossa '{}':", mv);
-                for row in char_map.iter() {
-                    println!("{}", row.iter().collect::<String>());
-                }
-                println!();*/() {
-                    let next_y = (last_y as isize + dy) as usize;
-                    let next_x = (last_x as isize + dx) as usize;
-
-                    // Se troviamo un altro blocco, aggiungilo alla catena
-                    if next_y < char_map.len()
-                        && next_x < char_map[0].len()
-                        && char_map[next_y][next_x] == 'O'
-                    {
-                        block_positions.push((next_y, next_x));
-                    } else {
-                        break;
-                    }
-                }
-
-                // Controlla se c'è spazio per spostare tutti i blocchi
-                let next_y = (block_positions.last().unwrap().0 as isize + dy) as usize;
-                let next_x = (block_positions.last().unwrap().1 as isize + dx) as usize;
-
-                if next_y < char_map.len()
-                    && next_x < char_map[0].len()
-                    && char_map[next_y][next_x] == '.'
-                {
-                    // Sposta i blocchi a catena
-                    for &(y, x) in block_positions.iter().rev() {
-                        let next_y = (y as isize + dy) as usize;
-                        let next_x = (x as isize + dx) as usize;
-                        char_map[next_y][next_x] = 'O';
-                        char_map[y][x] = '.';
-                    }
-
-                    // Sposta il robot nella posizione del primo blocco
-                    char_map[new_y][new_x] = '@';
-                    char_map[robot_pos.0][robot_pos.1] = '.';
-                    *robot_pos = (new_y, new_x);
+                if is_valid_position(char_map, last_y, last_x) && char_map[last_y][last_x] == '.' {
+                    move_blocks_chain(char_map, &block_positions, dy, dx);
+                    move_robot(char_map, robot_pos, (new_y, new_x));
                 }
             } else {
-                // Sposta il robot su una cella vuota
-                char_map[new_y][new_x] = '@';
-                char_map[robot_pos.0][robot_pos.1] = '.';
-                *robot_pos = (new_y, new_x);
+                move_robot(char_map, robot_pos, (new_y, new_x));
             }
         }
     }
